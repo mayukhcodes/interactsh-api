@@ -11,6 +11,12 @@ const EXECUTABLE = './interactsh-client'; // Replace with the actual executable 
 const EXECUTABLE_FLAGS = '-json -o ./res.out -ps'; // Replace with the actual flags
 
 app.use(bodyParser.json());
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 
 exec(`${EXECUTABLE} ${EXECUTABLE_FLAGS}`, {
@@ -18,7 +24,7 @@ exec(`${EXECUTABLE} ${EXECUTABLE_FLAGS}`, {
 });
 
 // GET endpoint for /getInteractions
-app.get('/gett', (req, res) => {
+app.get('/getInteractions', (req, res) => {
   try {
 
     const fileContent = readFileSync(filePath, 'utf-8');
@@ -59,7 +65,7 @@ app.get('/gett', (req, res) => {
     try {
 
   
-      if(req.query.start != null && req.query.end !=null){
+      if(req.query.start != '' && req.query.start != null && req.query.end !='' && req.query.end != null){
 
         let st = new Date(req.query.start);
         st = st.getTime();
@@ -81,7 +87,7 @@ app.get('/gett', (req, res) => {
 
         resout = resfilter;
       }
-      else if(req.query.start != null ){
+      else if(req.query.start != '' && req.query.start != null ){
 
         let st = new Date(req.query.start);
         st = st.getTime();
@@ -102,7 +108,7 @@ app.get('/gett', (req, res) => {
 
           resout = resfilter;
       }
-      else if(req.query.end != null ){
+      else if(req.query.end !='' && req.query.end != null ){
 
         let et = new Date(req.query.end);
         et = et.getTime();
@@ -113,7 +119,7 @@ app.get('/gett', (req, res) => {
             let targetT = new Date(obj.timestamp);
             targetT = targetT.getTime();
 
-          return targetT <=et ;
+          return targetT < et ;
           }
 
         }
@@ -127,10 +133,10 @@ app.get('/gett', (req, res) => {
     }
     try{
       
-      if(req.query.address !=null){
+      if(req.query.address !=null && req.query.address !='' ){
 
         const resfilter = resout.filter(obj =>
-          obj.hasOwnProperty('remote-address') && obj.remote-address == req.query.address
+          obj.hasOwnProperty('remote-address') && obj['remote-address'] == req.query.address
         );
 
         resout = resfilter;
@@ -179,9 +185,10 @@ app.get('/geturl', (req, res) => {
     // const payresult = JSON.stringify(fileContent);
 
     const obj = {res:fileContent}
+    const strobj = JSON.stringify(obj);
 
     // Respond with the content of the file
-    res.status(200).send(obj);
+    res.status(200).send(strobj);
 
   } catch (error) {
     console.error(error);
