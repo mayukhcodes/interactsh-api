@@ -12,6 +12,7 @@ const EXECUTABLE_FLAGS = '-json -o ./res.out -ps'; // Replace with the actual fl
 
 app.use(bodyParser.json());
 app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
   res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
